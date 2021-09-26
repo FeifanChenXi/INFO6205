@@ -1,7 +1,15 @@
 package edu.neu.coe.info6205.util;
-
+import edu.neu.coe.info6205.sort.elementary.InsertionSort;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 import static org.junit.Assert.*;
 
@@ -158,5 +166,91 @@ public class TimerTest {
     public static final int TENTH = 100;
     public static final double TENTH_DOUBLE = 100;
     public static final int HUNDREDTH = 10;
+    public static void main(String[] arg){
+        part();
+        ordered();
+        random();
 
+        reverse();
+
+    }
+    public static void random(){
+        int maxBound = 100000;
+        int repeatNumbers = 100;
+        Integer[] array;
+        int length = 10000;
+        for(int i = 0;i<6;i++){
+            array = new Integer[length];
+            for (int j = 0; j < length; j++) {
+                array[j] = (ThreadLocalRandom.current().nextInt(0, maxBound + 1));
+            }
+            Integer[] finalArray = array;
+            Benchmark<Integer> benchmark = new Benchmark_Timer<>("RandonArray", a->new InsertionSort<Integer>().sort(finalArray,0,finalArray .length));
+            double mean = benchmark.run(1,repeatNumbers);
+            System.out.println("RandonArray's length is "+length+"       time is    "+mean);
+            length*=2;
+        }
+    }
+
+
+    public static void ordered(){
+        int maxBound = 100000;
+        int  repeatNumbers = 100;
+        Integer[] array;
+        int length = 10000;
+        for(int i = 0;i<6;i++){
+            array = new Integer[length];
+            for (int j = 0; j < length; j++) {
+                array[j] = (ThreadLocalRandom.current().nextInt(0, maxBound + 1));
+            }
+            new InsertionSort<Integer>().sort(array,0,array.length);
+            Integer[] finalArray = array;
+            Benchmark<Integer> benchmark = new Benchmark_Timer<>("OrderedArray", a->new InsertionSort<Integer>().sort(finalArray,0,finalArray.length));
+            double mean = benchmark.run(1, repeatNumbers);
+            System.out.println("OrderedArray's length is "+length+"        time is        "+mean);
+            length*=2;
+        }
+    }
+
+    public static void reverse(){
+        int  maxBound = 100000;
+        int  repeatNumbers = 100;
+        Integer[] array;
+        int length = 10000;
+        for(int i = 0;i<6;i++){
+            array = new Integer[length];
+            for (int j = 0; j < length; j++) {
+                array[j] = (ThreadLocalRandom.current().nextInt(0,  maxBound + 1));
+            }
+            new InsertionSort<Integer>().sort(array,0,array.length);
+            Integer[] arrayreverse= new Integer[length];
+            for(int q=0;q<array.length;q++){
+                arrayreverse[q]=array[array.length-i-1];
+            }
+            Integer[] finalArray = array;
+            Benchmark<Integer> benchmark = new Benchmark_Timer<>("ReversedOdder Array", a->new InsertionSort<Integer>().sort(finalArray,0,finalArray.length));
+            double mean = benchmark.run(1, repeatNumbers);
+            System.out.println("ReversedOdder Array's length is "+length+"        time is        "+mean);
+            length*=2;
+        }
+    }
+
+    public static void part(){
+        int  maxBound = 100000;
+        int  repeatNumbers = 100;
+        Integer[] array;
+        int length = 10000;
+        for(int i = 0;i<6;i++){
+            array = new Integer[length];
+            for (int j = 0; j < length; j++) {
+                array[j] = (ThreadLocalRandom.current().nextInt(0,  maxBound + 1));
+            }
+            new InsertionSort<Integer>().sort(array,0,array.length/2);
+            Integer[] finalArray = array;
+            Benchmark<Integer> benchmark = new Benchmark_Timer<>("partialodrder Array", a->new InsertionSort<Integer>().sort(finalArray,0,finalArray.length));
+            double mean = benchmark.run(1, repeatNumbers);
+            System.out.println("partialodrder Array's length is  "+length+"        time is         "+mean);
+            length*=2;
+        }
+    }
 }

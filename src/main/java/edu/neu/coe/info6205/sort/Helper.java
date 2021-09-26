@@ -1,10 +1,5 @@
 package edu.neu.coe.info6205.sort;
 
-import edu.neu.coe.info6205.util.Config;
-
-import java.util.Random;
-import java.util.function.Function;
-
 import static java.util.Arrays.binarySearch;
 
 /**
@@ -16,12 +11,7 @@ import static java.util.Arrays.binarySearch;
  *
  * @param <X>
  */
-public interface Helper<X extends Comparable<X>> {
-
-    /**
-     * @return true if this is an instrumented Helper.
-     */
-    boolean instrumented();
+public interface Helper<X extends Comparable<X>> extends GenericHelper<X> {
 
     /**
      * Compare elements i and j of xs within the subarray lo..hi
@@ -50,25 +40,6 @@ public interface Helper<X extends Comparable<X>> {
      * @return -1 if v is less than w; 1 if v is greater than w; otherwise 0.
      */
     int compare(X v, X w);
-
-    /**
-     * Method to perform a general swap, i.e. between xs[i] and xs[j]
-     *
-     * @param xs the array of X elements.
-     * @param i  the index of the lower of the elements to be swapped.
-     * @param j  the index of the higher of the elements to be swapped.
-     */
-    void swap(X[] xs, int i, int j);
-
-    /**
-     * Method to perform a stable swap, i.e. between xs[i] and xs[i-1]
-     *
-     * @param xs the array of X elements.
-     * @param i  the index of the higher of the adjacent elements to be swapped.
-     */
-    default void swapStable(X[] xs, int i) {
-        swap(xs, i - 1, i);
-    }
 
     /**
      * Method to perform a stable swap, but only if xs[i] is less than xs[i-1], i.e. out of order.
@@ -138,16 +109,6 @@ public interface Helper<X extends Comparable<X>> {
     }
 
     /**
-     * Copy the element at source[j] into target[i]
-     *
-     * @param source the source array.
-     * @param i      the target index.
-     * @param target the target array.
-     * @param j      the source index.
-     */
-    void copy(X[] source, int i, X[] target, int j);
-
-    /**
      * TODO eliminate this method as it has been superseded by swapConditional. However, maybe the latter is a better name.
      * Method to fix a potentially unstable inversion.
      *
@@ -193,27 +154,6 @@ public interface Helper<X extends Comparable<X>> {
      */
     void postProcess(X[] xs);
 
-    /**
-     * Method to generate an array of randomly chosen X elements.
-     *
-     * @param clazz the class of X.
-     * @param f     a function which takes a Random and generates a random value of X.
-     * @return an array of X of length determined by the current value according to setN.
-     */
-    X[] random(Class<X> clazz, Function<Random, X> f);
-
-    /**
-     * @return the description of this Helper.
-     */
-    String getDescription();
-
-    /**
-     * Get the configuration associated with this Helper.
-     *
-     * @return an instance of Config.
-     */
-    Config getConfig();
-
     default int cutoff() {
         return 7;
     }
@@ -224,18 +164,6 @@ public interface Helper<X extends Comparable<X>> {
      * @param n the size to be managed.
      */
     void init(int n);
-
-    /**
-     * Get the current value of N.
-     *
-     * @return the value of N.
-     */
-    int getN();
-
-    /**
-     * Close this Helper, freeing up any resources used.
-     */
-    void close();
 
     /**
      * If instrumenting, increment the number of copies by n.

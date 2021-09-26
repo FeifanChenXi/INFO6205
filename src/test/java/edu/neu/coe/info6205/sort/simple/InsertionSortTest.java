@@ -97,6 +97,31 @@ public class InsertionSortTest {
         System.out.println(statPack);
         assertEquals(inversions, fixes);
     }
+    @Test
+    public void sort3() throws Exception {
+        final Config config = ConfigTest.setupConfig("true", "0", "1", "", "");
+        int n = 100;
+        Helper<Integer> helper = HelperFactory.create("InsertionSort", n, config);
+        helper.init(n);
+        final PrivateMethodTester privateMethodTester = new PrivateMethodTester(helper);
+        final StatPack statPack = (StatPack) privateMethodTester.invokePrivate("getStatPack");
+        Integer[] xs = new Integer[n];
+        for (int i = 0; i < n; i++) xs[i] = n - i;
+        SortWithHelper<Integer> sorter = new InsertionSort<Integer>(helper);
+        sorter.preProcess(xs);
+        Integer[] ys = sorter.sort(xs);
+        assertTrue(helper.sorted(ys));
+        sorter.postProcess(ys);
+        final int compares = (int) statPack.getStatistics(InstrumentedHelper.COMPARES).mean();
+        // NOTE: these are suppoed to match within about 12%.
+        // Since we set a specific seed, this should always succeed.
+        // If we use true random seed and this test fails, just increase the delta a little.
+        assertEquals(4950, compares);
+        final int inversions = (int) statPack.getStatistics(InstrumentedHelper.INVERSIONS).mean();
+        final int fixes = (int) statPack.getStatistics(InstrumentedHelper.FIXES).mean();
+        System.out.println(statPack);
+        assertEquals(inversions, fixes);
+    }
 
     final static LazyLogger logger = new LazyLogger(InsertionSort.class);
 

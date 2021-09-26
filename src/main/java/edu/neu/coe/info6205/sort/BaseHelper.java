@@ -9,6 +9,21 @@ import java.util.function.Function;
 public class BaseHelper<X extends Comparable<X>> implements Helper<X> {
 
     /**
+     * Static method to get a Helper configured for the given class.
+     *
+     * @param clazz the class for configuration.
+     * @param <Y>   the type.
+     * @return a Helper<Y></Y>
+     */
+    public static <Y extends Comparable<Y>> Helper<Y> getHelper(final Class<?> clazz) {
+        try {
+            return new BaseHelper<>("Standard Helper", Config.load(clazz));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
      * @return false
      */
     public boolean instrumented() {
@@ -80,19 +95,6 @@ public class BaseHelper<X extends Comparable<X>> implements Helper<X> {
             System.arraycopy(xs, i, xs, i + 1, j - i);
             xs[i] = x;
         }
-    }
-
-    /**
-     * Copy the element at source[j] into target[i]
-     *
-     * @param source the source array.
-     * @param i      the target index.
-     * @param target the target array.
-     * @param j      the source index.
-     */
-    @Override
-    public void copy(X[] source, int i, X[] target, int j) {
-        target[j] = source[i];
     }
 
     public boolean sorted(X[] xs) {

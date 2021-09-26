@@ -1,7 +1,7 @@
 /*
   (c) Copyright 2018, 2019 Phasmid Software
  */
-package edu.neu.coe.info6205.sort.simple;
+package edu.neu.coe.info6205.sort.elementary;
 
 import edu.neu.coe.info6205.sort.BaseHelper;
 import edu.neu.coe.info6205.sort.Helper;
@@ -9,6 +9,7 @@ import edu.neu.coe.info6205.sort.SortWithHelper;
 import edu.neu.coe.info6205.util.Config;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 public class InsertionSort<X extends Comparable<X>> extends SortWithHelper<X> {
 
@@ -46,6 +47,10 @@ public class InsertionSort<X extends Comparable<X>> extends SortWithHelper<X> {
         super(helper);
     }
 
+    public InsertionSort() {
+        this(BaseHelper.getHelper(InsertionSort.class));
+    }
+
     /**
      * Sort the sub-array xs:from:to using insertion sort.
      *
@@ -55,42 +60,27 @@ public class InsertionSort<X extends Comparable<X>> extends SortWithHelper<X> {
      */
     public void sort(X[] xs, int from, int to) {
         final Helper<X> helper = getHelper();
-
-        int loopNumbers=to-from;
-        for(int i=from;i<loopNumbers;i++){
-            X temp=xs[i];
-            int j=i;
-            while(j>from){
-                if(helper.compare(xs[j],xs[j-1])==-1){
-                    helper.swap(xs,j-1,j);
-
-
-                }
-                else {
+        for (int i = from + 1; i < to; ++i) {
+            for (int j = i; j > from ; j--) {
+                if (!helper.swapStableConditional(xs, j)) {
                     break;
                 }
-                j--;
-                xs[j]=temp;
-
             }
-
-            }
-
-
-
-        // TO BE IMPLEMENTED
+        }
     }
-//
-//    /**
-//     * This is used by unit tests.
-//     *
-//     * @param ys  the array to be sorted.
-//     * @param <Y> the underlying element type.
-//     */
-//    public static <Y extends Comparable<Y>> void mutatingInsertionSort(Y[] ys) {
-//        new InsertionSort<Y>().mutatingSort(ys);
-//    }
 
     public static final String DESCRIPTION = "Insertion sort";
 
+    public static <T extends Comparable<T>> void sort(T[] ts) {
+        new InsertionSort<T>().mutatingSort(ts);
+    }
+
+    public static void main(String[] args) {
+        Integer[] arr = {14, 0, 1};
+        Arrays.sort(arr, Collections.reverseOrder());
+//        InsertionSort a = new InsertionSort();
+//        Integer[] b = {14, 0, 1};
+//        a.sort(b, 0, 3);
+        System.out.println(Arrays.asList(arr));
+    }
 }

@@ -2,8 +2,14 @@ package edu.neu.coe.info6205.sort;
 
 import edu.neu.coe.info6205.util.Config;
 
+/**
+ * Base class for Sort with a Helper.
+ * <p>
+ * CONSIDER extending GenericSortWithGenericHelper
+ *
+ * @param <X> underlying type which extends Comparable.
+ */
 public abstract class SortWithHelper<X extends Comparable<X>> implements Sort<X> {
-
 
     public SortWithHelper(Helper<X> helper) {
         this.helper = helper;

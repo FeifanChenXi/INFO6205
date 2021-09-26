@@ -5,6 +5,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
+
 public class Timer {
 
     /**
@@ -53,9 +54,43 @@ public class Timer {
      * @return the average milliseconds per repetition.
      */
     public <T, U> double repeat(int n, Supplier<T> supplier, Function<T, U> function, UnaryOperator<T> preFunction, Consumer<U> postFunction) {
-        logger.trace("repeat: with " + n + " runs");
+
+        pause();
+        int i=0;
+        while(i<n) {
+            if (preFunction == null && postFunction == null) {
+                T t = supplier.get();
+                resume();
+                function.apply(t);
+                pauseAndLap();
+            } else if (preFunction != null && postFunction == null) {
+                T t = supplier.get();
+                t = preFunction.apply(t);
+                resume();
+                function.apply(t);
+                pauseAndLap();
+            } else if (preFunction == null && postFunction != null) {
+                T t = supplier.get();
+                resume();
+                U u = function.apply(t);
+                pauseAndLap();
+                postFunction.accept(u);
+            }
+            else if (preFunction != null && postFunction != null) {
+                T t = supplier.get();
+                t = preFunction.apply(t);
+                resume();
+                U u = function.apply(t);
+                pauseAndLap();
+                postFunction.accept(u);
+            }
+            i++;
+        }
+    double meantime =meanLapTime();
+
+
         // TO BE IMPLEMENTED: note that the timer is running when this method is called and should still be running when it returns.
-        throw new UnsupportedOperationException("Not implemented yet");
+       return meantime;
     }
 
     /**
@@ -65,6 +100,7 @@ public class Timer {
      * @throws TimerException if this Timer is not running.
      */
     public double stop() {
+        if (!running) throw new TimerException();
         pauseAndLap();
         return meanLapTime();
     }
@@ -173,8 +209,14 @@ public class Timer {
      * @return the number of ticks for the system clock. Currently defined as nano time.
      */
     private static long getClock() {
-        // TO BE IMPLEMENTED
-        throw new UnsupportedOperationException("Not implemented yet");
+
+            long startTime = System.nanoTime();
+
+
+
+
+
+        return startTime;
     }
 
     /**
@@ -186,7 +228,12 @@ public class Timer {
      */
     private static double toMillisecs(long ticks) {
         // TO BE IMPLEMENTED
-        throw new UnsupportedOperationException("Not implemented yet");
+
+        double ms = (double) ticks;
+        ms/=1000000;
+
+        return ms;
+
     }
 
     final static LazyLogger logger = new LazyLogger(Timer.class);

@@ -3,6 +3,7 @@ package edu.neu.coe.info6205.sort;
 import edu.neu.coe.info6205.util.Config;
 import edu.neu.coe.info6205.util.LazyLogger;
 import edu.neu.coe.info6205.util.StatPack;
+import edu.neu.coe.info6205.util.Utilities;
 
 import java.util.Random;
 
@@ -48,6 +49,8 @@ public class InstrumentedHelper<X extends Comparable<X>> extends BaseHelper<X> {
             swaps++;
         X v = xs[i];
         X w = xs[j];
+        if (countHits)
+            hits += 4;
         if (countFixes) {
             int sense = Integer.signum(v.compareTo(w));
             fixes += sense;
@@ -76,6 +79,8 @@ public class InstrumentedHelper<X extends Comparable<X>> extends BaseHelper<X> {
             swaps += (j - i);
         if (countFixes)
             fixes += (j - i);
+        if (countHits)
+            hits += (j - i + 1) * 2;
         super.swapInto(xs, i, j);
     }
 
@@ -91,6 +96,8 @@ public class InstrumentedHelper<X extends Comparable<X>> extends BaseHelper<X> {
     @Override
     public void swapIntoSorted(X[] xs, int i) {
         int j = binarySearch(xs, 0, i, xs[i]);
+        if (countHits)
+            hits += 1 + (int) Utilities.lg(xs.length);
         if (j < 0) j = -j - 1;
         if (j < i) swapInto(xs, j, i);
     }
@@ -134,6 +141,8 @@ public class InstrumentedHelper<X extends Comparable<X>> extends BaseHelper<X> {
     public boolean swapConditional(X[] xs, int i, int j) {
         if (countCompares)
             compares++;
+        if (countHits)
+            hits += 2;
         int cf = xs[i].compareTo(xs[j]);
         if (cf > 0)
             swap(xs, i, j);
@@ -152,6 +161,8 @@ public class InstrumentedHelper<X extends Comparable<X>> extends BaseHelper<X> {
         // CONSIDER invoke super-method
         final X v = xs[i];
         final X w = xs[i - 1];
+        if (countHits)
+            hits += 2;
         boolean result = v.compareTo(w) < 0;
         if (countCompares)
             compares++;
@@ -160,6 +171,8 @@ public class InstrumentedHelper<X extends Comparable<X>> extends BaseHelper<X> {
             xs[i - 1] = v;
             if (countSwaps)
                 swaps++;
+            if (countHits)
+                hits += 2;
             if (countFixes)
                 fixes++;
         }
@@ -179,6 +192,8 @@ public class InstrumentedHelper<X extends Comparable<X>> extends BaseHelper<X> {
     public void copy(X[] source, int i, X[] target, int j) {
         if (countCopies)
             copies++;
+        if (countHits)
+            hits += 2;
         target[j] = source[i];
     }
 
@@ -190,6 +205,7 @@ public class InstrumentedHelper<X extends Comparable<X>> extends BaseHelper<X> {
     @Override
     public void incrementCopies(int n) {
         if (countCopies) copies += n;
+        if (countHits) hits += n * 2;
     }
 
     // NOTE: the following private methods are only for testing.
@@ -257,10 +273,11 @@ public class InstrumentedHelper<X extends Comparable<X>> extends BaseHelper<X> {
         swaps = 0;
         copies = 0;
         fixes = 0;
+        hits = 0;
         // NOTE: it's an error to reset the StatPack if we've been here before
         if (n == this.n && statPack != null) return;
         super.init(n);
-        statPack = new StatPack(n, COMPARES, SWAPS, COPIES, INVERSIONS, FIXES);
+        statPack = new StatPack(n, COMPARES, SWAPS, COPIES, INVERSIONS, FIXES, HITS);
     }
 
     /**
@@ -301,6 +318,8 @@ public class InstrumentedHelper<X extends Comparable<X>> extends BaseHelper<X> {
             statPack.add(COPIES, copies);
         if (countFixes)
             statPack.add(FIXES, fixes);
+        if (countHits)
+            statPack.add(HITS, hits);
     }
 
     @Override
@@ -348,6 +367,7 @@ public class InstrumentedHelper<X extends Comparable<X>> extends BaseHelper<X> {
         this.countCompares = config.getBoolean(INSTRUMENTING, COMPARES);
         this.countInversions = config.getInt(INSTRUMENTING, INVERSIONS, 0);
         this.countFixes = config.getBoolean(INSTRUMENTING, FIXES);
+        this.countHits = config.getBoolean(INSTRUMENTING, HITS); // the number of array accesses
         this.cutoff = config.getInt("helper", "cutoff", 0);
     }
 
@@ -390,6 +410,7 @@ public class InstrumentedHelper<X extends Comparable<X>> extends BaseHelper<X> {
     public static final String COPIES = "copies";
     public static final String INVERSIONS = "inversions";
     public static final String FIXES = "fixes";
+    public static final String HITS = "hits";
     public static final String INSTRUMENTING = "instrumenting";
 
     // NOTE: the following private methods are only for testing.
@@ -406,16 +427,22 @@ public class InstrumentedHelper<X extends Comparable<X>> extends BaseHelper<X> {
         return fixes;
     }
 
+    private int getHits() {
+        return hits;
+    }
+
     private final int cutoff;
     private final boolean countCopies;
     private final boolean countSwaps;
     private final boolean countCompares;
     private final boolean countFixes;
+    private final boolean countHits;
     private StatPack statPack;
     private int compares = 0;
     private int swaps = 0;
     private int copies = 0;
     private int fixes = 0;
+    private int hits = 0;
     private int countInversions;
     private int maxDepth = 0;
 }
