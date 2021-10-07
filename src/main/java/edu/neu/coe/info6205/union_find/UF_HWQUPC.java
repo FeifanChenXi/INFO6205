@@ -81,6 +81,17 @@ public class UF_HWQUPC implements UF {
     public int find(int p) {
         validate(p);
         int root = p;
+        if (pathCompression==true){
+            while (root != parent[root]) {
+                root = doPathCompression(root);
+            }
+        }
+        else if(pathCompression==false){
+            while (root != parent[root]) {
+                root = parent[root];
+            }
+
+        }
         // TO BE IMPLEMENTED
         return root;
     }
@@ -113,7 +124,9 @@ public class UF_HWQUPC implements UF {
         mergeComponents(find(p), find(q));
         count--;
     }
-
+   public int count(){
+        return count;
+   }
     @Override
     public int size() {
         return parent.length;
@@ -159,7 +172,12 @@ public class UF_HWQUPC implements UF {
      * @return the parent of the component
      */
     private int getParent(int i) {
-        return parent[i];
+        if(pathCompression==true){
+         return parent [doPathCompression(i)];
+        }
+        else {
+            return parent[i];
+        }
     }
 
     private final int[] parent;   // parent[i] = parent of i
@@ -168,13 +186,38 @@ public class UF_HWQUPC implements UF {
     private boolean pathCompression;
 
     private void mergeComponents(int i, int j) {
+
+        int iId=parent[i];
+        int jId=parent[j];
+        if(i==j){
+            return;
+        }
+        if(height[i]<height[j]){
+            parent[i]=jId;
+            height[j]+=height[i];
+
+        }
+        else {
+            parent[j]=iId;
+            height[i]+=height[j];
+        }
+
+
         // TO BE IMPLEMENTED make shorter root point to taller one
     }
 
     /**
      * This implements the single-pass path-halving mechanism of path compression
      */
-    private void doPathCompression(int i) {
+    private int  doPathCompression(int i) {
+        validate(i);
+        int root = i;
+        while(root!=parent[root]){
+            root=parent[parent[root]];
+        }
+
+        return root;
         // TO BE IMPLEMENTED update parent to value of grandparent
     }
+
 }
