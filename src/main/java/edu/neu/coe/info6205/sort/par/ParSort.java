@@ -50,7 +50,7 @@ class ParSort {
                     System.arraycopy(array, from, result, 0, result.length);
                     sort(result, 0, to - from);
                     return result;
-                }
+                },Main.myPool
         );
     }
 }

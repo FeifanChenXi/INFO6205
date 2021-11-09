@@ -8,7 +8,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
+import java.util.function.Supplier;
+import java.util.stream.IntStream;
 
 /**
  * This code has been fleshed out by Ziyao Qiao. Thanks very much.
@@ -16,13 +20,17 @@ import java.util.concurrent.ForkJoinPool;
  */
 public class Main {
 
-    public static void main(String[] args) {
+    static int threadCount = 8;
+    public static ForkJoinPool myPool = new ForkJoinPool(threadCount);
+    public static void main(String[] args){
         processArgs(args);
-        System.out.println("Degree of parallelism: " + ForkJoinPool.getCommonPoolParallelism());
+        //System.setProperty("java.util.concurrent.ForkJoinPool.common.parallelism", "2");
+        System.out.println("Degree of parallelism: " + threadCount);
         Random random = new Random();
-        int[] array = new int[2000000];
+        int[] array = new int[200000];
+        System.out.println("the array size is: " + array.length);
         ArrayList<Long> timeList = new ArrayList<>();
-        for (int j = 50; j < 100; j++) {
+        for (int j = 0; j < 20; j++) {
             ParSort.cutoff = 10000 * (j + 1);
             // for (int i = 0; i < array.length; i++) array[i] = random.nextInt(10000000);
             long time;
@@ -45,7 +53,7 @@ public class Main {
             BufferedWriter bw = new BufferedWriter(isr);
             int j = 0;
             for (long i : timeList) {
-                String content = (double) 10000 * (j + 1) / 2000000 + "," + (double) i / 10 + "\n";
+                String content = (double) 10000 * (j + 1) / 200000 + "," + (double) i / 10 + "\n";
                 j++;
                 bw.write(content);
                 bw.flush();
